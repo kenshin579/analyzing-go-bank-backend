@@ -6,19 +6,21 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+//todo : postgres docker 설정 파일 추가하기
+
 type User struct {
 	gorm.Model
-  Username string
-	Email string
+	Username string
+	Email    string
 	Password string
 }
 
 type Account struct {
 	gorm.Model
-  Type string
-	Name string
+	Type    string
+	Name    string
 	Balance uint
-	UserID uint
+	UserID  uint
 }
 
 func connectDB() *gorm.DB {
@@ -38,20 +40,28 @@ func createAccounts() {
 	for i := 0; i < len(users); i++ {
 		// Correct one way
 		generatedPassword := helpers.HashAndSalt([]byte(users[i].Username))
-		user := User{Username: users[i].Username, Email: users[i].Email, Password: generatedPassword}
+		user := User{
+			Username: users[i].Username,
+			Email:    users[i].Email,
+			Password: generatedPassword,
+		}
 		db.Create(&user)
 
-		account := Account{Type: "Daily Account", Name: string(users[i].Username + "'s" + " account"), Balance: uint(10000 * int(i+1)), UserID: user.ID}
+		account := Account{
+			Type:    "Daily Account",
+			Name:    users[i].Username + "'s" + " account",
+			Balance: uint(10000 * (i + 1)),
+			UserID:  user.ID,
+		}
 		db.Create(&account)
 	}
 	defer db.Close()
 }
 
-
 func Migrate() {
-	db := connectDB()
+	db := connectDB() //todo : 여기서 db 연결하고
 	db.AutoMigrate(&User{}, &Account{})
 	defer db.Close()
-	
-	createAccounts()
+
+	createAccounts() //todo: 여기 안에서도 또 db 연결하고...이건 좀 그렇지 않나?
 }
