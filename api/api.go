@@ -45,7 +45,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 func StartApi() {
 	router := mux.NewRouter()
 	router.HandleFunc("/login", login).Methods("POST")
-	fmt.Println("App is working on port :8888")
-	log.Fatal(http.ListenAndServe(":8888", router))
+	fmt.Println("App is working on port :8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 
 }

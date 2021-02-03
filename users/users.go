@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"time"
 
 	"duomly.com/go-bank-backend/helpers"
@@ -14,7 +15,8 @@ func Login(username string, pass string) map[string]interface{} {
 	db := helpers.ConnectDB()
 	user := &interfaces.User{}
 
-	//todo: 실제 sql은 어떤 형태로 나오는지 체크하면 좋을 듯하다
+	//SELECT * FROM "users"  WHERE "users"."deleted_at" IS NULL AND ((username = 'Martin' )) ORDER BY "users"."id" ASC LIMIT 1
+	db.LogMode(true)
 	if db.Where("username = ? ", username).First(&user).RecordNotFound() {
 		return map[string]interface{}{"message": "User not found"} //db 조회시 없는 경우
 	}
@@ -27,7 +29,7 @@ func Login(username string, pass string) map[string]interface{} {
 	// Find accounts for the user
 	accounts := []interfaces.ResponseAccount{}
 
-	//todo: 실제 sql은 어떤 형태로 나오는지 체크하면 좋을 듯하다
+	//SELECT id, name, balance FROM "accounts"  WHERE (user_id = 1 )
 	db.Table("accounts").Select("id, name, balance").Where("user_id = ? ", user.ID).Scan(&accounts)
 
 	// Setup response
@@ -40,7 +42,7 @@ func Login(username string, pass string) map[string]interface{} {
 
 	defer db.Close()
 
-	//todo : token에는 어떤 내용을 담는가? (userId, IssueAt, expiryDate, 사용한 알고리즘)
+	//token에는 어떤 내용을 담는가? (userId, IssueAt, expiryDate, 사용한 알고리즘)
 	//
 	// Sign token
 	tokenContent := jwt.MapClaims{
@@ -56,5 +58,6 @@ func Login(username string, pass string) map[string]interface{} {
 	response["jwt"] = token
 	response["data"] = responseUser
 
+	fmt.Printf("response : %v\n", response)
 	return response
 }
