@@ -18,7 +18,6 @@ type Login struct {
 	Password string
 }
 
-
 type ErrResponse struct {
 	Message string
 }
@@ -26,7 +25,7 @@ type ErrResponse struct {
 func login(w http.ResponseWriter, r *http.Request) {
 	// Read body
 	body, err := ioutil.ReadAll(r.Body)
-  helpers.HandleErr(err)
+	helpers.HandleErr(err)
 	// Handle Login
 	var formattedBody Login
 	err = json.Unmarshal(body, &formattedBody)
@@ -35,7 +34,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	// Prepare response
 	if login["message"] == "all is fine" {
 		resp := login
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(resp) //go data type -> json 형태로 변경해서 보냄
 		// Handle error in else
 	} else {
 		resp := ErrResponse{Message: "Wrong username or password"}
@@ -48,5 +47,5 @@ func StartApi() {
 	router.HandleFunc("/login", login).Methods("POST")
 	fmt.Println("App is working on port :8888")
 	log.Fatal(http.ListenAndServe(":8888", router))
-	
+
 }

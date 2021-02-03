@@ -26,13 +26,12 @@ func createAccounts() {
 	defer db.Close()
 }
 
-
 func Migrate() {
 	User := &interfaces.User{}
 	Account := &interfaces.Account{}
 	db := helpers.ConnectDB()
-	db.AutoMigrate(&User, &Account)
+	db.AutoMigrate(&User, &Account) //table을 생성해준다
 	defer db.Close()
-	
+
 	createAccounts()
 }
