@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"time"
 
 	"duomly.com/go-bank-backend/helpers"
@@ -8,11 +9,12 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
+
 // Refactor prepareToken
 func prepareToken(user *interfaces.User) string {
 	tokenContent := jwt.MapClaims{
 		"user_id": user.ID,
-		"expiry": time.Now().Add(time.Minute * 60).Unix(),
+		"expiry":  time.Now().Add(time.Minute * 60).Unix(),
 	}
 	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tokenContent)
 	token, err := jwtToken.SignedString([]byte("TokenPassword"))
@@ -20,16 +22,17 @@ func prepareToken(user *interfaces.User) string {
 
 	return token
 }
+
 // Refactor prepareResponse
 func prepareResponse(user *interfaces.User, accounts []interfaces.ResponseAccount) map[string]interface{} {
 	responseUser := &interfaces.ResponseUser{
-		ID: user.ID,
+		ID:       user.ID,
 		Username: user.Username,
-		Email: user.Email,
+		Email:    user.Email,
 		Accounts: accounts,
 	}
 
-	var token = prepareToken(user);
+	var token = prepareToken(user)
 	var response = map[string]interface{}{"message": "all is fine"}
 	response["jwt"] = token
 	response["data"] = responseUser
@@ -44,6 +47,8 @@ func Login(username string, pass string) map[string]interface{} {
 			{Value: username, Valid: "username"},
 			{Value: pass, Valid: "password"},
 		})
+
+	fmt.Printf("valid :%v\n", valid)
 	if valid {
 		// Connect DB
 		db := helpers.ConnectDB()
@@ -63,7 +68,7 @@ func Login(username string, pass string) map[string]interface{} {
 
 		defer db.Close()
 
-		var response = prepareResponse(user, accounts);
+		var response = prepareResponse(user, accounts)
 
 		return response
 	} else {
@@ -101,5 +106,5 @@ func Register(username string, email string, pass string) map[string]interface{}
 	} else {
 		return map[string]interface{}{"message": "not valid values"}
 	}
-	
+
 }
