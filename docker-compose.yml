@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-app-go-bank
+    ports:
+      - 5432:5432
+    volumes:
+      - ${HOME}/data/docker/postgres_app_go_bank:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
