@@ -22,14 +22,14 @@ type Login struct {
 
 type Register struct {
 	Username string
-	Email string
+	Email    string
 	Password string
 }
 
 type TransactionBody struct {
 	UserId uint
-	From uint
-	To uint
+	From   uint
+	To     uint
 	Amount int
 }
 
@@ -37,9 +37,10 @@ type TransactionBody struct {
 func readBody(r *http.Request) []byte {
 	body, err := ioutil.ReadAll(r.Body)
 	helpers.HandleErr(err)
-	
+
 	return body
 }
+
 // Refactor apiResponse
 func apiResponse(call map[string]interface{}, w http.ResponseWriter) {
 	if call["message"] == "all is fine" {
@@ -116,6 +117,6 @@ func StartApi() {
 	router.HandleFunc("/transaction", transaction).Methods("POST")
 	router.HandleFunc("/transactions/{userID}", getMyTransactions).Methods("GET")
 	router.HandleFunc("/user/{id}", getUser).Methods("GET")
-	fmt.Println("App is working on port :8888")
-	log.Fatal(http.ListenAndServe(":8888", router))
+	fmt.Println("App is working on port :8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
